@@ -1,55 +1,47 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adaptSwitchMiddleware = void 0;
-const object_1 = require("../../utils/object");
-const checkIfTestsPass = (checkArray) => {
-    const findNonComplianceResult = checkArray.find((value) => value === false);
-    return findNonComplianceResult !== false;
-};
-const filterHttpRequestByTarget = (request, target) => Object.keys(target).reduce((accumulator, currentValue) => ({
-    ...accumulator,
-    [currentValue]: request?.[currentValue],
-}), {});
-const convertTargetForLowerCaseEntities = (target) => Object.entries(target).map(([key, value]) => [
-    String(key).toLocaleLowerCase(),
-    String(value).toLocaleLowerCase(),
-]);
-const adaptSwitchMiddleware = (switchMiddlewareOptions) => (...middlewareParams) => {
-    const [rawHttpRequest] = middlewareParams;
-    for (const options of switchMiddlewareOptions) {
-        if (!options.target)
-            return options.handle(...middlewareParams);
-        const filteredHttRequest = filterHttpRequestByTarget(rawHttpRequest, options.target);
-        const httpRequestToLowerCaseKeys = (0, object_1.formateToLowerCase)(filteredHttRequest);
-        const targetEntries = convertTargetForLowerCaseEntities(options.target);
-        const expectedToLowerCaseKeys = (0, object_1.formateToLowerCase)(options.expected);
-        const testsResults = targetEntries.map((entries) => {
-            const targetRequestKey = entries[0];
-            const targetRequestValue = entries[1];
-            if (Array.isArray(targetRequestValue)) {
-                const conditionResultExtractedFromArray = (() => {
-                    const testsResult = targetRequestValue.map((value) => {
-                        const requestValue = httpRequestToLowerCaseKeys?.[targetRequestKey]?.[value];
-                        if (!options.expected && requestValue)
-                            return true;
-                        const expectedValue = expectedToLowerCaseKeys?.[value];
-                        return requestValue === expectedValue;
-                    });
-                    return checkIfTestsPass(testsResult);
-                })();
-                return conditionResultExtractedFromArray;
-            }
-            const requestValue = httpRequestToLowerCaseKeys?.[targetRequestKey]?.[targetRequestValue];
-            if (!options.expected)
-                return true;
-            const expectedValue = expectedToLowerCaseKeys?.[targetRequestValue];
-            const testResult = requestValue === expectedValue;
-            return testResult;
-        });
-        const passedTheTest = checkIfTestsPass(testsResults);
-        if (passedTheTest)
-            return options.handle(...middlewareParams);
-    }
-};
-exports.adaptSwitchMiddleware = adaptSwitchMiddleware;
+const switch_1 = require("./switch");
+const options = [
+    {
+        target: {
+            body: "sportClub",
+        },
+        expected: {
+            sportClub: 1,
+        },
+        handle: () => {
+            // Will run what club 1 needs
+        },
+    },
+    {
+        target: {
+            body: "sportClub",
+        },
+        expected: {
+            sportClub: 2,
+        },
+        handle: () => {
+            // Will run what club 2 needs
+        },
+    },
+    {
+        handle: () => {
+            // Here it will be executed if you do not enter in any case.
+        },
+    },
+];
+console.log((0, switch_1.adaptSwitchFunctions)(options));
+/*
+export type AdapterOptions<T = any> = {
+  target?: {
+    body?: string;
+    params?: string;
+    query?: string;
+    headers?: string;
+    [key: string]: string | undefined;
+  };
+  expected?: { [key: string]: any };
+  handle: Function;
+}[];
+*/
 //# sourceMappingURL=index.js.map
