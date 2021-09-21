@@ -1,4 +1,6 @@
-# An adapter where you can define which function to run
+# Switch Functions
+
+#### An adapter where you can define which function to run
 
 ## Installation
 
