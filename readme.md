@@ -43,7 +43,7 @@ type Values = "authentication" | "authorization";
 const options: AdapterOptions<Targets, Values> = [];
 ```
 
-#### Examples
+### Examples
 
 Let's say you are creating a soccer player creation flow, the initial roster stays the same, but each team has its own unique characteristics in the roster, so you choose to use `adaptSwitchFunctions` to assist you.
 
@@ -97,7 +97,7 @@ import {
 const result = adaptSwitchFunctions(options);
 ```
 
-### Express
+## Express
 
 Using lib with express. You can use it as **Middleware** or as a **Controller**.
 
